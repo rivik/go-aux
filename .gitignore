@@ -1,0 +1,6 @@
+.makefiletarget.*
+/cmd/*/*
+!/cmd/*/*.*
+*.swp
+.*.swp
+.DS_Store
