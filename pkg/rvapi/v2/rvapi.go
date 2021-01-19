@@ -3,7 +3,6 @@ package rvapi
 import (
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rivik/go-aux/pkg/appver"
@@ -35,10 +34,8 @@ func NewAPIServer(addr string) *APIServer {
 	api.Engine.HandleMethodNotAllowed = true
 
 	api.Server = &http.Server{
-		Addr:         addr,
-		Handler:      api.Engine,
-		ReadTimeout:  30 * time.Second,
-		WriteTimeout: 30 * time.Second,
+		Addr:    addr,
+		Handler: api.Engine,
 	}
 
 	return &api
