@@ -29,7 +29,7 @@ type APIServer struct {
 }
 
 func NewAPIServer(addr string) *APIServer {
-	api := APIServer{Engine: gin.Default()}
+	api := APIServer{Engine: gin.New()}
 
 	api.Engine.HandleMethodNotAllowed = true
 
