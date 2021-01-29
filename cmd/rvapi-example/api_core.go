@@ -33,7 +33,7 @@ func mainAPIInitAndServeForever(addr string) {
 	mainAPI = rvapi.NewAPIServer(addr)
 
 	rvapi.AddHandlersMonitoring(mainAPI.Engine.Group("/"))
-	addHandlersV1(mainAPI.Engine.Group("/v1", rvapi.ApiVersion(1)))
+	addHandlersV1(mainAPI.Engine.Group("/v1", rvapi.APIVersion(1)))
 
 	mainAPI.ServeForever()
 }

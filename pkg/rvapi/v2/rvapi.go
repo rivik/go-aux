@@ -8,7 +8,7 @@ import (
 	"github.com/rivik/go-aux/pkg/appver"
 )
 
-func ApiVersion(ver int) gin.HandlerFunc {
+func APIVersion(ver int) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Set("apiVersion", ver)
 		c.Next()
