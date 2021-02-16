@@ -2,6 +2,7 @@ package httping
 
 import (
 	"crypto/tls"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptrace"
@@ -58,6 +59,9 @@ func (ht HTTPRoundTripTimings) Durations() HTTPRoundTripDurations {
 
 func GetRoundTripTimings(c *http.Client, req *http.Request, readBody bool) (HTTPRoundTripTimings, *http.Response, []byte, error) {
 	timings := HTTPRoundTripTimings{}
+	if c.Transport == nil {
+		return timings, nil, nil, errors.New("http.Client.Transport must not be 'nil'")
+	}
 
 	trace := &httptrace.ClientTrace{
 		DNSStart: func(dsi httptrace.DNSStartInfo) { timings.DNSStart = time.Now() },
