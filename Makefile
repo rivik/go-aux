@@ -24,7 +24,7 @@ endif
 
 assets := $(shell find assets/ -type f)
 sources_go := $(shell find . -type f -name '*.go')
-bin_dirs_go := $(filter %/, $(wildcard $(cmd_dir_go)/*/))
+bin_dirs_go := $(filter %/,$(wildcard $(cmd_dir_go)/*/))
 bin_names_go := $(notdir $(patsubst %/,%,$(bin_dirs_go)))
 binaries_go := $(join $(bin_dirs_go),$(bin_names_go))
 
