@@ -3,7 +3,7 @@ package httping
 import (
 	"crypto/tls"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptrace"
 	"time"
@@ -89,7 +89,7 @@ func GetRoundTripTimings(c *http.Client, req *http.Request, readBody bool) (HTTP
 
 	var body []byte
 	if readBody {
-		body, err = ioutil.ReadAll(resp.Body)
+		body, err = io.ReadAll(resp.Body)
 		if err != nil {
 			return timings, resp, body, err
 		}

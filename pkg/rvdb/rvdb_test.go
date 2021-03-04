@@ -40,4 +40,5 @@ func TestDSNConfig(t *testing.T) {
 	if got != want {
 		t.Errorf("Bad result DSN: got %v; want %v", got, want)
 	}
+	t.Log("Parsed DSN: ", got)
 }

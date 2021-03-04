@@ -114,7 +114,11 @@ func InsertRecords(db *sql.DB, meta StorageMeta, recs []Inserter, silenceRecFlus
 }
 
 func Connect(c rvdb.DSNConfig) (*sql.DB, error) {
-	c.Prepare()
+	err := c.Prepare()
+	if err != nil {
+		return nil, err
+	}
+
 	c.DBParams.Set("username", c.User)
 	c.DBParams.Set("password", c.Password)
 

@@ -3,7 +3,7 @@ package rvgo
 // Some simple Golang helpers
 
 import (
-	"io/ioutil"
+	"os"
 	"strings"
 	"time"
 )
@@ -38,7 +38,7 @@ func UnixSecToTime(sec int64) time.Time {
 }
 
 func TrimmedStringFromFile(path string) (string, error) {
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return "", err
 	}
