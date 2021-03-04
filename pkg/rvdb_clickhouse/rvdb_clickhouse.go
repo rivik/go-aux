@@ -7,12 +7,14 @@ import (
 	"time"
 
 	_ "github.com/ClickHouse/clickhouse-go"
+
+	"github.com/rivik/go-aux/pkg/rvdb"
 )
 
 /*
 Usage example:
-    chHosts := strings.Split(stringCHHosts, ",")
-    chDB, err = rvdb_clickhouse.Connect(chHosts, authCHUser, authCHPass)
+	// file -> json.Unmarshal -> chConf
+    chDB, err = rvdb_clickhouse.Connect(chConf)
     if err != nil {
         log.Fatalf("Can't connect to ClickHouse: %v", err)
     }
@@ -111,14 +113,12 @@ func InsertRecords(db *sql.DB, meta StorageMeta, recs []Inserter, silenceRecFlus
 	return res, nil
 }
 
-func Connect(chHosts []string, authCHUser, authCHPass string) (*sql.DB, error) {
-	db, err := sql.Open("clickhouse",
-		fmt.Sprintf(
-			// TODO: dsn-config, like conf = ParseDSN(string); conf.Timeout = 5; sql.Open(conf.String())
-			"tcp://%s?timeout=5&read_timeout=300&write_timeout=300&pool_size=200&altHosts=%s&username=%s&password=%s",
-			chHosts[0], strings.Join(chHosts[1:], ","), authCHUser, authCHPass,
-		),
-	)
+func Connect(c rvdb.DSNConfig) (*sql.DB, error) {
+	c.Prepare()
+	c.DBParams.Set("username", c.User)
+	c.DBParams.Set("password", c.Password)
+
+	db, err := sql.Open("clickhouse", c.DSN().String())
 	if err != nil {
 		return nil, err
 	}
