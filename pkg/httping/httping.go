@@ -3,6 +3,7 @@ package httping
 import (
 	"crypto/tls"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptrace"
@@ -45,15 +46,23 @@ type HTTPRoundTripDurations struct {
 	Total             time.Duration
 }
 
+func subIfNotZero(a, b time.Time) time.Duration {
+	if a.IsZero() {
+		return time.Duration(0)
+	} else {
+		return a.Sub(b)
+	}
+}
+
 func (ht HTTPRoundTripTimings) Durations() HTTPRoundTripDurations {
 	return HTTPRoundTripDurations{
-		Resolve:           ht.DNSDone.Sub(ht.DNSStart),
-		Connect:           ht.ConnectDone.Sub(ht.ConnectStart),
-		TLS:               ht.TLSDone.Sub(ht.TLSStart),
-		FirstResponseByte: ht.GotFirstResponseByte.Sub(ht.RequestStart),
-		Headers:           ht.ReadHeaders.Sub(ht.GotFirstResponseByte),
-		Body:              ht.ReadBody.Sub(ht.ReadHeaders),
-		Total:             ht.RequestDone.Sub(ht.RequestStart),
+		Resolve:           subIfNotZero(ht.DNSDone, ht.DNSStart),
+		Connect:           subIfNotZero(ht.ConnectDone, ht.ConnectStart),
+		TLS:               subIfNotZero(ht.TLSDone, ht.TLSStart),
+		FirstResponseByte: subIfNotZero(ht.GotFirstResponseByte, ht.RequestStart),
+		Headers:           subIfNotZero(ht.ReadHeaders, ht.GotFirstResponseByte),
+		Body:              subIfNotZero(ht.ReadBody, ht.ReadHeaders),
+		Total:             subIfNotZero(ht.RequestDone, ht.RequestStart),
 	}
 }
 
@@ -82,7 +91,7 @@ func GetRoundTripTimings(c *http.Client, req *http.Request, readBody bool) (HTTP
 
 	resp, err := c.Transport.RoundTrip(req)
 	if err != nil {
-		return timings, resp, nil, err
+		return timings, resp, nil, fmt.Errorf("round trip failed: %w", err)
 	}
 	defer resp.Body.Close()
 	timings.ReadHeaders = time.Now()
@@ -91,7 +100,7 @@ func GetRoundTripTimings(c *http.Client, req *http.Request, readBody bool) (HTTP
 	if readBody {
 		body, err = io.ReadAll(resp.Body)
 		if err != nil {
-			return timings, resp, body, err
+			return timings, resp, body, fmt.Errorf("read body failed: %w", err)
 		}
 		timings.ReadBody = time.Now()
 	}

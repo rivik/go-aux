@@ -11,8 +11,8 @@ func ExampleGetRoundTripTimings() {
 	req, _ := http.NewRequest("GET", "https://ipv4.google.com", nil)
 
 	// It's the only way to set global deadline, including all redirects, upgrades, etc
-	deadline := 200 * time.Millisecond
-	ctx, cancel := context.WithCancel(context.TODO())
+	deadline := 500 * time.Millisecond
+	ctx, cancel := context.WithCancel(context.Background())
 	_ = time.AfterFunc(deadline, func() {
 		cancel()
 	})
@@ -40,10 +40,10 @@ func ExampleGetRoundTripTimings() {
 
 	ht, _, _, err := GetRoundTripTimings(client, req, false)
 	if err != nil {
-		log.Printf("ExampleGetRoundTripTimings [durations=%+v] http error: %s", ht.Durations(), err)
+		log.Printf("ExampleGetRoundTripTimings [durations=%+v; timings=%+v] error: %s", ht.Durations(), ht, err)
 		return
 	}
-	log.Printf("ExampleGetRoundTripTimings [durations=%+v]", ht.Durations())
+	log.Printf("ExampleGetRoundTripTimings [durations=%+v; timings=%+v] ok", ht.Durations(), ht)
 
 	// Output:
 }
