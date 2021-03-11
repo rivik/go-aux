@@ -58,18 +58,11 @@ type Result struct {
 	RowsError     int64
 }
 
-type StorageMeta struct {
-	Schema     string
-	TableWrite string
-	TableRead  string
-	Fields     []string
-}
-
 type Inserter interface {
 	FlushToDBStmt(stmt *sql.Stmt) (Result, error)
 }
 
-func InsertRecords(db *sql.DB, meta StorageMeta, recs []Inserter, silenceRecFlushErrors bool) (Result, error) {
+func InsertRecords(db *sql.DB, schema, table string, fields []string, recs []Inserter, silenceRecFlushErrors bool) (Result, error) {
 	tx, err := db.Begin()
 	if err != nil {
 		// fatal error, return
@@ -77,15 +70,15 @@ func InsertRecords(db *sql.DB, meta StorageMeta, recs []Inserter, silenceRecFlus
 	}
 	defer func() { _ = tx.Rollback() }()
 
-	placeholders := make([]string, len(meta.Fields))
+	placeholders := make([]string, len(fields))
 	for i := range placeholders {
 		placeholders[i] = "?"
 	}
 
 	query := fmt.Sprintf("INSERT INTO `%s`.`%s` (%s) VALUES (%s)",
-		meta.Schema,
-		meta.TableWrite,
-		strings.Join(meta.Fields, ", "),
+		schema,
+		table,
+		strings.Join(fields, ", "),
 		strings.Join(placeholders, ", "),
 	)
 
