@@ -62,7 +62,7 @@ type Inserter interface {
 	FlushToDBStmt(stmt *sql.Stmt) (Result, error)
 }
 
-func InsertRecords(db *sql.DB, schema, table string, fields []string, recs []Inserter, silenceRecFlushErrors bool) (Result, error) {
+func InsertRecords(db *sql.DB, schema, table string, fields []string, recs []Inserter) (Result, error) {
 	tx, err := db.Begin()
 	if err != nil {
 		// fatal error, return
@@ -95,7 +95,7 @@ func InsertRecords(db *sql.DB, schema, table string, fields []string, recs []Ins
 		res.RowsProcessed += recRes.RowsProcessed
 		res.RowsError += recRes.RowsError
 
-		if err != nil && !silenceRecFlushErrors {
+		if err != nil {
 			return res, err
 		}
 	}
