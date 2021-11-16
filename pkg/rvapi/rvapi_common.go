@@ -25,6 +25,10 @@ func Ret(c *gin.Context, code int, data interface{}) {
 	c.JSON(code, data)
 }
 
+func RetFile(c *gin.Context, filepath string) {
+	c.File(filepath)
+}
+
 func RetErr(c *gin.Context, code int, err error, problemType ProblemType, extensions interface{}) {
 	c.Header(HeaderContentType, MediaTypeProblemJSON)
 
